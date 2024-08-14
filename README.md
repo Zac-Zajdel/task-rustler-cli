@@ -4,6 +4,7 @@ Learning Rust By Building A CLI To Add Tasks
 ### Commands
 - `cargo run list`
 - `cargo run add [TASK]`
+- `cargo run clear`
 
 
 ### V1 Features
@@ -12,7 +13,7 @@ Learning Rust By Building A CLI To Add Tasks
 - [ ] Complete Task
 - [ ] Remove task
 - [ ] Sort Tasks
-- [ ] Clear Tasks
+- [x] Clear Tasks
 
 
 ### V2 Features

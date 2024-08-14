@@ -7,24 +7,18 @@ pub struct TaskRustler {
 }
 
 impl TaskRustler {
-  pub fn new() -> Result<Self, String> {
+  pub fn new() -> Result<Self, Error> {
     let task_path = String::from("/Users/zajdel/code/task-rustler-cli/tasks.txt");
 
     let task_file = OpenOptions::new()
       .write(true)
       .read(true)
       .create(true)
-      .open(&task_path)
-      .expect("Cannot Access Task File");
+      .open(&task_path)?;
 
     let mut buf_reader = BufReader::new(&task_file);
-
     let mut contents = String::new();
-
-    buf_reader.read_to_string(&mut contents).unwrap_or_else(|e| {
-      eprintln!("Failed to read the file: {}", e);
-      std::process::exit(1);
-  });
+    buf_reader.read_to_string(&mut contents)?;
 
     let tasks = contents.lines().map(str::to_string).collect();
 
@@ -59,6 +53,15 @@ impl TaskRustler {
     }
 
     buffer.flush()?;
+    Ok(())
+  }
+
+  pub fn clear(&self) -> Result<(), Error> {
+    OpenOptions::new()
+      .write(true)
+      .truncate(true)
+      .open(&self.task_path)?;
+
     Ok(())
   }
 }

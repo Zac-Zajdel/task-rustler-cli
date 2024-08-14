@@ -18,6 +18,9 @@ fn main() -> Result<(), Error> {
             "add" => {
                 task_rustler.add(&args[2..])?
             }
+            "clear" => {
+                task_rustler.clear()?
+            }
             _ => println!("Not A Valid Argument")
         }
     } else {
