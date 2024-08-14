@@ -1,4 +1,4 @@
-use std::fs::{File, OpenOptions};
+use std::fs::OpenOptions;
 use std::io::{BufReader, BufWriter, Write, Read, Error, ErrorKind};
 
 pub struct TaskRustler {
@@ -35,11 +35,7 @@ impl TaskRustler {
   }
 
   pub fn list(&self) -> Result<String, Error> {
-    let mut file = File::open(&self.task_path)?;
-    let mut content = String::new();
-
-    file.read_to_string(&mut content)?;
-    Ok(content)
+    Ok(self.tasks.join("\n"))
   }
 
   pub fn add(&self, args: &[String]) -> Result<(), Error> {
