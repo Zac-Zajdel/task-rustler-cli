@@ -56,6 +56,21 @@ impl TaskRustler {
     Ok(())
   }
 
+  pub fn sort(&mut self) -> Result<(), Error> {
+    self.tasks.sort();
+
+    let sorted = self.tasks.join("\n");
+
+    let mut file = OpenOptions::new()
+      .write(true)
+      .truncate(true)
+      .open(&self.task_path)?;
+
+    file.write_all(sorted.as_bytes())?;
+
+    Ok(())
+  }
+
   pub fn clear(&self) -> Result<(), Error> {
     OpenOptions::new()
       .write(true)

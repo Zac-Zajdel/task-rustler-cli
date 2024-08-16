@@ -3,7 +3,7 @@ use std::{env, io::Error};
 use task_rustler::TaskRustler;
 
 fn main() -> Result<(), Error> {
-    let task_rustler = TaskRustler::new().expect("Failed To Create Instance");
+    let mut task_rustler = TaskRustler::new().expect("Failed To Create Instance");
 
     let args: Vec<String> = env::args().collect();
 
@@ -17,6 +17,9 @@ fn main() -> Result<(), Error> {
             }
             "add" => {
                 task_rustler.add(&args[2..])?
+            }
+            "sort" => {
+                task_rustler.sort()?;
             }
             "clear" => {
                 task_rustler.clear()?
