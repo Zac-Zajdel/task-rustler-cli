@@ -1,5 +1,5 @@
-use std::fs::OpenOptions;
-use std::io::{BufReader, BufWriter, Write, Read, Error, ErrorKind};
+use std::fs::{File, OpenOptions};
+use std::io::{BufRead, BufReader, BufWriter, Error, ErrorKind, Read, Write};
 
 pub struct TaskRustler {
   pub tasks: Vec<String>,
@@ -10,13 +10,13 @@ impl TaskRustler {
   pub fn new() -> Result<Self, Error> {
     let task_path = String::from("/Users/zajdel/code/task-rustler-cli/tasks.txt");
 
-    let task_file = OpenOptions::new()
+    let file = OpenOptions::new()
       .write(true)
       .read(true)
       .create(true)
       .open(&task_path)?;
 
-    let mut buf_reader = BufReader::new(&task_file);
+    let mut buf_reader = BufReader::new(&file);
     let mut contents = String::new();
     buf_reader.read_to_string(&mut contents)?;
 
@@ -34,25 +34,55 @@ impl TaskRustler {
 
   pub fn add(&self, args: &[String]) -> Result<(), Error> {
     if args.is_empty() {
-      return Err(Error::new(ErrorKind::InvalidInput, "No items provided to add"));
+      return Err(Error::new(ErrorKind::InvalidInput, "No task provided to add"));
     }
 
-    let task_file = OpenOptions::new()
+    let file = OpenOptions::new()
       .create(true)
       .append(true)
       .open(&self.task_path)?;
 
-    let mut buffer = BufWriter::new(task_file);
+    let mut writer = BufWriter::new(file);
     for arg in args {
       if arg.trim().is_empty() {
         continue;
       }
 
       let line = format!("[ ] {}\n", arg);
-      buffer.write_all(line.as_bytes())?;
+      writer.write_all(line.as_bytes())?;
     }
 
-    buffer.flush()?;
+    writer.flush()?;
+    Ok(())
+  }
+
+  pub fn remove(&self, args: &[String]) -> Result<(), Error> {
+    if args.is_empty() {
+      return Err(Error::new(ErrorKind::InvalidInput, "No task provided to remove"));
+    }
+
+    let task_file = File::open(&self.task_path)?;
+    let reader = BufReader::new(task_file);
+
+    let tasks_to_keep: Vec<String> = reader.lines()
+      .filter_map(|line| line.ok())
+      .filter(|line| {
+        let task = line[4..].trim();
+        !args.iter().any(|arg| arg.eq_ignore_ascii_case(task))
+      })
+      .collect();
+
+    let output = tasks_to_keep.join("\n") + "\n";
+
+    let task_file = OpenOptions::new()
+      .write(true)
+      .truncate(true)
+      .open(&self.task_path)?;
+
+    let mut writer = BufWriter::new(task_file);
+    writer.write_all(output.as_bytes())?;
+    writer.flush()?;
+
     Ok(())
   }
 

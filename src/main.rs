@@ -18,6 +18,9 @@ fn main() -> Result<(), Error> {
             "add" => {
                 task_rustler.add(&args[2..])?
             }
+            "remove" => {
+                task_rustler.remove(&args[2..])?
+            }
             "sort" => {
                 task_rustler.sort()?;
             }
